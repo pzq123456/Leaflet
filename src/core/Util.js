@@ -1,13 +1,15 @@
 /*
  * @namespace Util
  *
- * Various utility functions, used by Leaflet internally.
+ * 工具函数，leaflet 内部使用
  */
 
-// @function extend(dest: Object, src?: Object): Object
-// Merges the properties (including properties inherited through the prototype chain)
-// of the `src` object (or multiple objects) into `dest` object and returns the latter.
-// Has an `L.extend` shortcut.
+/**
+ * 合并对象 Merges the properties (including properties inherited through the prototype chain)
+ * @param {object} dest - 目标对象
+ * @param  {...any} args - 可以传入多个对象
+ * @returns {object} - 返回合并后的对象
+ */
 export function extend(dest, ...args) {
 	let j, len, src;
 
@@ -21,8 +23,11 @@ export function extend(dest, ...args) {
 	return dest;
 }
 
-// @property lastId: Number
-// Last unique ID used by [`stamp()`](#util-stamp)
+
+/**
+ * @property lastId: Number
+ * - 用于 [`stamp()`](#util-stamp) 函数
+ */
 export let lastId = 0;
 
 // @function stamp(obj: Object): Number
@@ -41,6 +46,13 @@ export function stamp(obj) {
 // received by the bound function will be any arguments passed when binding the
 // function, followed by any arguments passed when invoking the bound function.
 // Has an `L.throttle` shortcut.
+/**
+ * 节流函数，返回一个函数，该函数在给定的时间内最多执行一次
+ * @param {Function} fn - 需要节流的函数
+ * @param {Number} time - 间隔时间
+ * @param {Object} context - 函数执行的上下文
+ * @returns 
+ */
 export function throttle(fn, time, context) {
 	let lock, queuedArgs;
 
@@ -60,7 +72,7 @@ export function throttle(fn, time, context) {
 
 		} else {
 			// call and lock until later
-			fn.apply(context, args);
+			fn.apply(context, args); // .apply 就是指定函数执行的上下文和参数
 			setTimeout(later, time);
 			lock = true;
 		}
@@ -80,18 +92,26 @@ export function wrapNum(x, range, includeMax) {
 	return x === max && includeMax ? x : ((x - min) % d + d) % d + min;
 }
 
-// @function falseFn(): Function
-// Returns a function which always returns `false`.
+
+/**
+ * 返回一个函数，该函数始终返回 false
+ * @returns {Function => false} 
+ */
 export function falseFn() { return false; }
 
-// @function formatNum(num: Number, precision?: Number|false): Number
-// Returns the number `num` rounded with specified `precision`.
-// The default `precision` value is 6 decimal places.
-// `false` can be passed to skip any processing (can be useful to avoid round-off errors).
+/**
+ * 这个函数的主要目的是将数字 num 四舍五入到指定的 precision 小数位。
+ * @param {Number} num 
+ * @param {Number} precision - 这是一个可选参数，表示要四舍五入到的小数位数。
+ * 	- 如果没有提供这个参数，那么默认值为 6。
+ * 	- 如果这个参数为 false，那么函数将直接返回 num，不进行任何处理。
+ * @returns {Number} - 返回四舍五入后的数字
+ */
 export function formatNum(num, precision) {
 	if (precision === false) { return num; }
 	const pow = Math.pow(10, precision === undefined ? 6 : precision);
 	return Math.round(num * pow) / pow;
+	// JavaScript 提供了 toFixed 方法可以将数字四舍五入到指定的小数位，但是它返回的是字符串，而不是数字。此外，toFixed 方法不能接受 false 作为参数来跳过处理。
 }
 
 // @function splitWords(str: String): String[]

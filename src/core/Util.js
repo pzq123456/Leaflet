@@ -82,9 +82,17 @@ export function throttle(fn, time, context) {
 }
 
 // @function wrapNum(num: Number, range: Number[], includeMax?: Boolean): Number
-// Returns the number `num` modulo `range` in such a way so it lies within
-// `range[0]` and `range[1]`. The returned value will be always smaller than
-// `range[1]` unless `includeMax` is set to `true`.
+
+
+/**
+ * 将数字 num 模数为 range，使其位于 range[0] 和 range[1] 之间。
+ * Returns the number `num` modulo `range` in such a way so it lies within`range[0]` and `range[1]`. 
+ * The returned value will be always smaller than `range[1]` unless `includeMax` is set to `true`.
+ * @param {Number} x - 需要进行模数的数字
+ * @param {Number[]} range - 模数范围
+ * @param {Boolean} includeMax - 是否包含最大值
+ * @returns {Number} - 返回模数后的数字
+ */
 export function wrapNum(x, range, includeMax) {
 	const max = range[1],
 	    min = range[0],
@@ -134,11 +142,17 @@ export function setOptions(obj, options) {
 	return obj.options;
 }
 
-// @function getParamString(obj: Object, existingUrl?: String, uppercase?: Boolean): String
-// Converts an object into a parameter URL string, e.g. `{a: "foo", b: "bar"}`
-// translates to `'?a=foo&b=bar'`. If `existingUrl` is set, the parameters will
-// be appended at the end. If `uppercase` is `true`, the parameter names will
-// be uppercased (e.g. `'?A=foo&B=bar'`)
+/**
+ * 将对象转换为参数 URL 字符串，例如 `{a: "foo", b: "bar"}` 转换为 `'?a=foo&b=bar'`。
+ * @param {*} obj - 需要转换的对象
+ * @param {*} existingUrl - 可选参数，如果设置了这个参数，那么参数将会被追加到这个参数的末尾。
+ * @param {*} uppercase - 可选参数，如果设置为 true，那么参数名将会被转换为大写。
+ * @returns {String} - 返回转换后的字符串
+ * @example
+ * getParamString({a: "foo", b: "bar"}) // '?a=foo&b=bar'
+ * getParamString({a: "foo", b: "bar"}, 'http://www.example.com') // 'http://www.example.com?a=foo&b=bar'
+ * getParamString({a: "foo", b: "bar"}, 'http://www.example.com', true) // 'http://www.example.com?A=foo&B=bar'
+ */
 export function getParamString(obj, existingUrl, uppercase) {
 	const params = [];
 	for (const i in obj) {
@@ -151,18 +165,24 @@ export function getParamString(obj, existingUrl, uppercase) {
 
 const templateRe = /\{ *([\w_ -]+) *\}/g;
 
-// @function template(str: String, data: Object): String
-// Simple templating facility, accepts a template string of the form `'Hello {a}, {b}'`
-// and a data object like `{a: 'foo', b: 'bar'}`, returns evaluated string
-// `('Hello foo, bar')`. You can also specify functions instead of strings for
-// data values — they will be evaluated passing `data` as an argument.
+/**
+ * 简单的模板函数，接受一个模板字符串和一个数据对象，返回一个字符串。
+ * @param {String} str - 模板字符串
+ * @param {Object} data - 数据对象
+ * @returns - 返回模板字符串替换后的字符串
+ * @example
+ * template('Hello {a}, {b}', {a: 'foo', b: 'bar'}) // 'Hello foo, bar'
+ * template('Hello {a}, {b}', {a: 'foo', b: 'bar', c: 'baz'}) // 'Hello foo, bar'
+ * template('Hello {a}, {b}', {a: 'foo'}) // Error: No value provided for variable {b}
+ * template('Hello {a}, {b}', {a: 'foo', b: () => 'bar'}) // 'Hello foo, bar'
+ * template('Hello {a}, {b}', {a: 'foo', b: (data) => data.a}) // 'Hello foo, foo'
+ */
 export function template(str, data) {
 	return str.replace(templateRe, (str, key) => {
 		let value = data[key];
 
 		if (value === undefined) {
 			throw new Error(`No value provided for variable ${str}`);
-
 		} else if (typeof value === 'function') {
 			value = value(data);
 		}
@@ -170,14 +190,21 @@ export function template(str, data) {
 	});
 }
 
-// @property emptyImageUrl: String
-// Data URI string containing a base64-encoded empty GIF image.
-// Used as a hack to free memory from unused images on WebKit-powered
-// mobile devices (by setting image `src` to this string).
+
+/**
+ * @constant emptyImageUrl
+ * - 这个常量的主要用途是作为一个技巧，用于释放在基于 WebKit 的移动设备上未使用的图像的内存。
+ * - 当你不再需要一个图像时，你可以将其 src 属性设置为这个字符串，这样浏览器就会释放该图像原本占用的内存。
+ */
 export const emptyImageUrl = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
 // inspired by https://paulirish.com/2011/requestanimationframe-for-smart-animating/
 
+/**
+ * 这段代码定义了一个名为 getPrefixed 的函数，它接受一个参数 name。这个函数的主要目的是获取浏览器特定前缀的 JavaScript API。
+ * @param {string} name - 浏览器特定前缀的 JavaScript API 名称
+ * @returns - 返回浏览器特定前缀的 JavaScript API
+ */
 function getPrefixed(name) {
 	return window[`webkit${name}`] || window[`moz${name}`] || window[`ms${name}`];
 }

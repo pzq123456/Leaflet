@@ -26,12 +26,15 @@ export function extend(dest, ...args) {
 
 /**
  * @property lastId: Number
- * - 用于 [`stamp()`](#util-stamp) 函数
+ * - 用于 `stamp()` 函数
  */
 export let lastId = 0;
 
-// @function stamp(obj: Object): Number
-// Returns the unique ID of an object, assigning it one if it doesn't have it.
+/**
+ * 返回对象的唯一 ID，如果对象没有 ID，那么为其分配一个。
+ * @param {*} obj 
+ * @returns {Number} - 返回对象的唯一 ID
+ */
 export function stamp(obj) {
 	if (!('_leaflet_id' in obj)) {
 		obj['_leaflet_id'] = ++lastId;

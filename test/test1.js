@@ -138,6 +138,9 @@ const ExtendedClass = Class.extend({
       instanceMethod() {
         console.log('Instance method called');
       },
+	  print(text) {
+		console.log(text);
+	  }
     },
   ],
   options: {
@@ -146,21 +149,12 @@ const ExtendedClass = Class.extend({
   },
 });
 
+
+
+
+ExtendedClass.addInitHook("print","hello world!");
 const instance = new ExtendedClass();
 
-console.log('Static Method:', ExtendedClass.staticMethod);
-instance.instanceMethod();
+ExtendedClass.prototype.instanceMethod();
 
-console.log('Options Before Merge:', instance.options);
-ExtendedClass.mergeOptions({ option1: 'updated1', option3: 'newOption' });
-console.log('Options After Merge:', instance.options);
-
-ExtendedClass.addInitHook(function () {
-  console.log('Init Hook 1');
-});
-
-ChildClass.addInitHook(function () {
-  console.log('Init Hook 2');
-});
-
-const childInstance = new ChildClass();
+console.log('Extended Class:', instance);

@@ -1,11 +1,11 @@
 import { setOptions } from './Util.js';
 
 export class Class {
-	/** 
-	* Extends the current class given the properties to be included.
-	* Returns a Javascript function that is a class constructor (to be called with `new`).
-	* @function Class.extend(props)
-	*/
+	/**
+	 * 拓展当前类，返回一个新的类
+	 * @param {*} param0 - 一个对象，包含要拓展的属性（statics 静态属性, includes 包含到父类的属性, ...props 直接加入本类的其他属性）
+	 * @returns - 返回一个新的类
+	 */
 	static extend({ statics, includes, ...props }) {
 		class NewClass extends this {} // this 指的是调用extend方法的类，即当前类。这里相当于创建了一个新的类，这个类继承了当前类。
 
@@ -55,7 +55,12 @@ export class Class {
 		Object.assign(this.prototype.options, options);
 		return this;
 	}
-
+	/**
+	 * 添加一个初始化钩子
+	 * @param {*} fn - 一个函数，或者是一个（原型链中的）类的方法名
+	 * @param  {...any} args - 传递给fn的参数
+	 * @returns 
+	 */
 	static addInitHook(fn, ...args) {
 		const init = typeof fn === 'function' ? fn : function () {
 			this[fn](...args);

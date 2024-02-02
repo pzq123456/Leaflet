@@ -58,15 +58,11 @@ function renderObject(obj, parent) {
         ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
         button.textContent = ul.style.display === 'none' ? '+' : '-';
     };
-    // button 颜色
-    button.style.cssText = 'color: blue';
-
-
     parent.appendChild(button);
     // 渲染大括号
     let span = document.createElement('span');
     span.textContent = '{';
-    span.style.cssText = 'color: blue';
+    span.style.cssText = 'color: orange';
     parent.appendChild(span);
 
     let ul = document.createElement('ul');
@@ -81,12 +77,18 @@ function renderObject(obj, parent) {
         let li = document.createElement('li');
         ul.appendChild(li);
         let span = document.createElement('span');
+        // style for key
+        span.style.cssText = 'color: #3da1ac';
         span.textContent = key;
+        // add : after key
+        span.textContent += ': ';
         li.appendChild(span);
         if (typeof obj[key] === 'object') {
             renderObject(obj[key], li);
         } else {
             let span = document.createElement('span');
+            // style for value
+            span.style.cssText = 'color: #fff';
             span.textContent = obj[key];
             li.appendChild(span);
         }
@@ -94,7 +96,7 @@ function renderObject(obj, parent) {
     // 渲染大括号
     let span2 = document.createElement('span');
     span2.textContent = '}';
-    span2.style.cssText = 'color: blue';
+    span2.style.cssText = 'color: orange';
     parent.appendChild(span2);
 }
 

@@ -20,7 +20,7 @@ export const Handler = Class.extend({
 		if (this._enabled) { return this; }
 
 		this._enabled = true;
-		this.addHooks();
+		this.addHooks(); // 这个方法是抽象方法，需要子类实现。
 		return this;
 	},
 
@@ -30,7 +30,7 @@ export const Handler = Class.extend({
 		if (!this._enabled) { return this; }
 
 		this._enabled = false;
-		this.removeHooks();
+		this.removeHooks(); // 这个方法是抽象方法，需要子类实现。
 		return this;
 	},
 
@@ -38,14 +38,14 @@ export const Handler = Class.extend({
 	// Returns `true` if the handler is enabled
 	enabled() {
 		return !!this._enabled;
-	}
+	},
 
 	// @section Extension methods
 	// Classes inheriting from `Handler` must implement the two following methods:
-	// @method addHooks()
-	// Called when the handler is enabled, should add event hooks.
-	// @method removeHooks()
-	// Called when the handler is disabled, should remove the event hooks added previously.
+		// @method addHooks()
+		// Called when the handler is enabled, should add event hooks.
+		// @method removeHooks()
+		// Called when the handler is disabled, should remove the event hooks added previously.
 });
 
 // @section There is static function which can be called without instantiating L.Handler:

@@ -1,110 +1,166 @@
-/**
- * 节流函数，返回一个函数，该函数在给定的时间内最多执行一次
- * @param {Function} fn - 需要节流的函数
- * @param {Number} time - 间隔时间
- * @param {Object} context - 函数执行的上下文
- * @returns 
- */
-export function throttle(fn, time, context) {
-	let lock, queuedArgs;
-
-	function later() {
-		// reset lock and call if queued
-		lock = false;
-		if (queuedArgs) {
-			wrapperFn.apply(context, queuedArgs);
-			queuedArgs = false;
+// @function setOptions(obj: Object, options: Object): Object
+// Merges the given properties to the `options` of the `obj` object, returning the resulting options. See `Class options`. Has an `L.setOptions` shortcut.
+function setOptions(obj, options) {
+	if (!Object.hasOwn(obj, 'options')) {
+		obj.options = obj.options ? Object.create(obj.options) : {};
+	}
+	for (const i in options) {
+		if (Object.hasOwn(options, i)) {
+			obj.options[i] = options[i];
 		}
 	}
+	return obj.options;
+}
 
-	function wrapperFn(...args) {
-		if (lock) {
-			// called too soon, queue to call later
-			queuedArgs = args;
+class Class {
+	/** 
+	* Extends the current class given the properties to be included.
+	* Returns a Javascript function that is a class constructor (to be called with `new`).
+	* @function Class.extend(props)
+	*/
+	static extend({ statics, includes, ...props }) {
+		class NewClass extends this {} // this 指的是调用extend方法的类，即当前类。这里相当于创建了一个新的类，这个类继承了当前类。
 
-		} else {
-			// call and lock until later
-			fn.apply(context, args); // .apply 就是指定函数执行的上下文和参数
-			setTimeout(later, time);
-			lock = true;
+		// Inherit parent's static properties
+		Object.setPrototypeOf(NewClass, this); // 这意味着NewClass的原型对象是当前类。 
+
+		const parentProto = this.prototype;
+		const proto = NewClass.prototype;
+
+		// Mix static properties into the class
+		if (statics) {
+			Object.assign(NewClass, statics);
 		}
+
+		// Mix includes into the prototype
+		if (includes) {
+			Object.assign(proto, ...includes);
+		}
+
+		// Mix given properties into the prototype
+		Object.assign(proto, props);
+
+		// Merge options
+		if (proto.options) {
+			proto.options = parentProto.options ? { ...parentProto.options } : {};
+			Object.assign(proto.options, props.options);
+		}
+
+		proto._initHooks = [];
+
+		return NewClass;
 	}
 
-	return wrapperFn;
-}
+	static include(props) {
+		const parentOptions = this.prototype.options;
+		Object.assign(this.prototype, props); // 这意味着如果props对象中有与类原型对象中同名的属性，那么这些属性的值将被props对象中的值覆盖。
 
-const templateRe = /\{ *([\w_ -]+) *\}/g;
-
-/**
- * 简单的模板函数，接受一个模板字符串和一个数据对象，返回一个字符串。
- * @param {String} str - 模板字符串
- * @param {Object} data - 数据对象
- * @returns - 返回模板字符串替换后的字符串
- * @example
- * template('Hello {a}, {b}', {a: 'foo', b: 'bar'}) // 'Hello foo, bar'
- * template('Hello {a}, {b}', {a: 'foo', b: 'bar', c: 'baz'}) // 'Hello foo, bar'
- * template('Hello {a}, {b}', {a: 'foo'}) // Error: No value provided for variable {b}
- * template('Hello {a}, {b}', {a: 'foo', b: () => 'bar'}) // 'Hello foo, bar'
- * template('Hello {a}, {b}', {a: 'foo', b: (data) => data.a}) // 'Hello foo, foo'
- */
-export function template(str, data) {
-	return str.replace(templateRe, (str, key) => {
-		let value = data[key];
-
-		if (value === undefined) {
-			throw new Error(`No value provided for variable ${str}`);
-		} else if (typeof value === 'function') {
-			value = value(data);
+		if (props.options) {
+			this.prototype.options = parentOptions;
+			this.mergeOptions(props.options); // 这意味着，如果props对象中有一个名为options的属性，那么它的值将被合并到类原型对象的options属性中，而不是直接覆盖。
 		}
-		return value;
-	});
+
+		return this;
+	}
+
+	static mergeOptions(options) {
+		Object.assign(this.prototype.options, options);
+		return this;
+	}
+
+	static addInitHook(fn, ...args) {
+		const init = typeof fn === 'function' ? fn : function () {
+			this[fn](...args);
+		};
+
+		this.prototype._initHooks = this.prototype._initHooks || [];
+		this.prototype._initHooks.push(init);
+
+		return this;
+	}
+
+	_initHooksCalled = false;
+
+	constructor(...args) {
+		setOptions(this); 
+
+		// Call the constructor
+		if (this.initialize) {
+			this.initialize(...args);
+		}
+
+		// Call all constructor hooks
+		this.callInitHooks();
+	}
+
+	callInitHooks() {
+		if (this._initHooksCalled) {
+			return;
+		}
+
+		// Collect all prototypes in chain
+		const prototypes = [];
+		let current = this;
+
+		while ((current = Object.getPrototypeOf(current)) !== null) {
+			prototypes.push(current);
+		}
+
+		// Reverse so the parent prototype is first
+		prototypes.reverse();
+
+		// Call init hooks on each prototype
+		for (const proto of prototypes) {
+			for (const hook of proto._initHooks ?? []) { // 遍历每个原型的_initHooks
+				hook.call(this);
+			}
+		}
+
+		this._initHooksCalled = true;
+	}
 }
 
-/**
- * 这段代码定义了一个名为 getPrefixed 的函数，它接受一个参数 name。这个函数的主要目的是获取浏览器特定前缀的 JavaScript API。
- * @param {string} name - 浏览器特定前缀的 JavaScript API 名称
- * @returns - 返回浏览器特定前缀的 JavaScript API
- */
-function getPrefixed(name) {
-	return window[`webkit${name}`] || window[`moz${name}`] || window[`ms${name}`];
+// Test Class and its methods
+class ChildClass extends Class {
+  initialize() {
+    console.log('ChildClass initialized');
+  }
 }
 
-// test
-let test1 = throttle(function () {console.log('test');}, 10000, null);
-
-// 绑定事件 id = test1
-document.getElementById('test1').addEventListener('click', () => {
-    console.log('click!');
-    test1();
+const ExtendedClass = Class.extend({
+  statics: {
+    staticMethod() {
+      console.log('Static method called');
+    },
+  },
+  includes: [
+    {
+      instanceMethod() {
+        console.log('Instance method called');
+      },
+    },
+  ],
+  options: {
+    option1: 'default1',
+    option2: 'default2',
+  },
 });
 
-function test2() {
-	let res1 = template('Hello {a}, {b}', {a: 'foo', b: 'bar'});
-	console.log(res1);
-	let res2 = template('Hello {a}, {b}', {a: 'foo', b: 'bar', c: 'baz'});
-	console.log(res2);
-	let res3 = template('Hello {a}, {b}', {a: 'foo'});
-	console.log(res3);
-	let res4 = template('Hello {a}, {b}', {a: 'foo', b: () => 'bar'});
-	console.log(res4);
-	let res5 = template('Hello {a}, {b}', {a: 'foo', b: (data) => data.a});
-	console.log(res5);
-}
+const instance = new ExtendedClass();
 
-// 绑定事件 id = test2
-document.getElementById('test2').addEventListener('click', () => {
-	test2();
+console.log('Static Method:', ExtendedClass.staticMethod);
+instance.instanceMethod();
+
+console.log('Options Before Merge:', instance.options);
+ExtendedClass.mergeOptions({ option1: 'updated1', option3: 'newOption' });
+console.log('Options After Merge:', instance.options);
+
+ExtendedClass.addInitHook(function () {
+  console.log('Init Hook 1');
 });
 
-function test3() {
-	// 测试基于特定前缀的 JavaScript API
-	let res1 = getPrefixed('RequestAnimationFrame');
-	console.log(res1);
-	let res2 = getPrefixed('CancelAnimationFrame');
-	console.log(res2);
-}
-
-// 绑定事件 id = test3
-document.getElementById('test3').addEventListener('click', () => {
-	test3();
+ChildClass.addInitHook(function () {
+  console.log('Init Hook 2');
 });
+
+const childInstance = new ChildClass();

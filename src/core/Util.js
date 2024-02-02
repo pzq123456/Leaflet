@@ -131,8 +131,13 @@ export function splitWords(str) {
 	return str.trim().split(/\s+/);
 }
 
-// @function setOptions(obj: Object, options: Object): Object
-// Merges the given properties to the `options` of the `obj` object, returning the resulting options. See `Class options`. Has an `L.setOptions` shortcut.
+
+/**
+ * 查找 obj 中的 options 并将其与输入的 options 合并（如果不存在则创建一个新的 options 对象），同名属性将被覆盖。
+ * @param {*} obj - 需要合并 options 的对象
+ * @param {*} options - （可选）要合并的选项 不传入默认创建一个空的 options 对象
+ * @returns {Object} - 返回合并后的 options 对象（注意不是 obj，而是 obj.options）
+ */
 export function setOptions(obj, options) {
 	if (!Object.hasOwn(obj, 'options')) {
 		obj.options = obj.options ? Object.create(obj.options) : {};

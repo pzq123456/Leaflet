@@ -16,7 +16,9 @@ consoleTypes.forEach(type => {
                 const div = document.createElement('div');
                 div.style.cssText = logStyles[type];
                 // 设置下边框  使用对应type的颜色
-                div.style.borderBottom = `1px solid ${logStyles[type].split(':')[1]}`;
+                // div.style.borderBottom = `1px solid ${logStyles[type].split(':')[1]}`;
+                // 下边框设置为虚线
+                div.style.borderBottom = `1px dashed ${logStyles[type].split(':')[1]}`;
                 div.textContent = arg;
                 myConsoleDiv.appendChild(div);
             }
@@ -71,7 +73,7 @@ function renderObject(obj, parent) {
     // ul 显示状态
     ul.style.display = 'none';
     // ul 下边框
-    ul.style.borderBottom = '1px solid #cccccc';
+    ul.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
     parent.appendChild(ul);
     for (let key in obj) {
         let li = document.createElement('li');
@@ -112,7 +114,7 @@ function renderArray(arr, parent) {
 
     let ul = document.createElement('ul');
     ul.style.display = 'none';
-    ul.style.borderBottom = '1px solid #ccc';
+    ul.style.borderBottom = '1px solid rgba(255, 255, 255, 0.8)';
     parent.appendChild(ul);
     for (let i = 0; i < arr.length; i++) {
         let li = document.createElement('li');

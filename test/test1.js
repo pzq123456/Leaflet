@@ -146,6 +146,7 @@ const ExtendedClass = Class.extend({
   options: {
     option1: 'default1',
     option2: 'default2',
+	arr: [1,2,3],
   },
 });
 

@@ -55,6 +55,7 @@ export class Class {
 		Object.assign(this.prototype.options, options);
 		return this;
 	}
+	
 	/**
 	 * 添加一个初始化钩子
 	 * @param {*} fn - 一个函数，或者是一个（原型链中的）类的方法名

@@ -27,12 +27,13 @@ import { extend, stamp, splitWords, falseFn} from './Util.js';
  */
 
 export const Events = {
-	/* @method on(type: String, fn: Function, context?: Object): this
+	/**
 	 * Adds a listener function (`fn`) to a particular event type of the object. You can optionally specify the context of the listener (object the this keyword will point to). You can also pass several space-separated types (e.g. `'click dblclick'`).
-	 *
-	 * @alternative
-	 * @method on(eventMap: Object): this
-	 * Adds a set of type/listener pairs, e.g. `{click: onClick, mousemove: onMouseMove}`
+	 * @param {String} types - types can be a string of space-separated words or: a map of types/handlers
+	 * - Adds a set of type/listener pairs, e.g. `{click: onClick, mousemove: onMouseMove}`
+	 * @param {Function} fn 
+	 * @param {Object} context 
+	 * @returns {this} - this
 	 */
 	on(types, fn, context) {
 
@@ -58,16 +59,15 @@ export const Events = {
 		return this;
 	},
 
-	/* @method off(type: String, fn?: Function, context?: Object): this
-	 * Removes a previously added listener function. If no function is specified, it will remove all the listeners of that particular event from the object. Note that if you passed a custom context to `on`, you must pass the same context to `off` in order to remove the listener.
-	 *
-	 * @alternative
-	 * @method off(eventMap: Object): this
-	 * Removes a set of type/listener pairs.
-	 *
-	 * @alternative
-	 * @method off: this
-	 * Removes all listeners to all events on the object. This includes implicitly attached events.
+	/**
+	 * Removes a previously added listener function. If no function is specified, it will remove all the listeners of that particular event from the object. 
+	 * - Note that if you passed a custom context to `on`, you must pass the same context to `off` in order to remove the listener.
+	 * - clear all listeners if called without arguments. Removes all listeners to all events on the object. This includes implicitly attached events.
+	 * @param {String} types - types can be a string of space-separated words or: a map of types/handlers
+	 *  - Removes a set of type/listener pairs.
+	 * @param {Function} fn 
+	 * @param {Object} context 
+	 * @returns 
 	 */
 	off(types, fn, context) {
 

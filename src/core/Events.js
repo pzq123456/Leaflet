@@ -168,14 +168,19 @@ export const Events = {
 				/* copy array in case events are being fired */
 				this._events[type] = listeners = listeners.slice();
 			}
-			listeners.splice(index, 1);
+			listeners.splice(index, 1); // remove the listener from the array
 		}
 	},
 
-	// @method fire(type: String, data?: Object, propagate?: Boolean): this
-	// Fires an event of the specified type. You can optionally provide a data
-	// object — the first argument of the listener function will contain its
-	// properties. The event can optionally be propagated to event parents.
+	/**
+	 * Fires an event of the specified type. 
+	 * - You can optionally provide a data object — the first argument of the listener function will contain its properties. 
+	 * - The event can optionally be propagated to event parents.
+	 * @param {String} type - type of event to fire
+	 * @param {Object} data - data to be passed as an argument to the event listener
+	 * @param {Boolean} propagate - whether to propagate the event to parents (set with addEventParent)
+	 * @returns {this} - this
+	 */
 	fire(type, data, propagate) {
 		if (!this.listens(type, propagate)) { return this; }
 
@@ -211,10 +216,17 @@ export const Events = {
 		return this;
 	},
 
-	// @method listens(type: String, propagate?: Boolean): Boolean
-	// @method listens(type: String, fn: Function, context?: Object, propagate?: Boolean): Boolean
-	// Returns `true` if a particular event type has any listeners attached to it.
-	// The verification can optionally be propagated, it will return `true` if parents have the listener attached to it.
+	/**
+	 * Returns `true` if a particular event type has any listeners attached to it.
+	 * - listens(type: String, propagate?: Boolean): Boolean
+	 * - The verification can optionally be propagated, it will return `true` if parents have the listener attached to it.
+	 * - listens(type: String, fn: Function, context?: Object, propagate?: Boolean): Boolean
+	 * @param {String} type 
+	 * @param {Function} fn 
+	 * @param {Object} context 
+	 * @param {Boolean} propagate 
+	 * @returns 
+	 */
 	listens(type, fn, context, propagate) {
 		if (typeof type !== 'string') {
 			console.warn('"string" type argument expected');

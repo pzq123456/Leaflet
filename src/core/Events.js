@@ -256,30 +256,39 @@ export const Events = {
 		return false;
 	},
 
-	// returns the index (number) or false
 	_listens(type, fn, context) {
 		if (!this._events) {
 			return false;
 		}
-
+	
 		const listeners = this._events[type] || [];
 		if (!fn) {
 			return !!listeners.length;
 		}
-
+	
 		if (context === this) {
 			// Less memory footprint.
 			context = undefined;
 		}
-
+	
+		// Check if the function is already present in the listeners
 		for (let i = 0, len = listeners.length; i < len; i++) {
-			if (listeners[i].fn === fn && listeners[i].ctx === context) {
+			const existingFn = listeners[i].fn;
+			const existingContext = listeners[i].ctx;
+	
+			// Handle arrow functions without a name
+			if (existingFn === fn && existingContext === context) {
+				return i;
+			}
+	
+			// Check if the functions are arrow functions without a name
+			if (typeof existingFn === 'function' && existingFn.toString() === fn.toString() && existingContext === context) {
 				return i;
 			}
 		}
+	
 		return false;
-
-	},
+	},	
 
 	// @method once(…): this
 	// Behaves as [`on(…)`](#evented-on), except the listener will only get fired once and then removed.

@@ -6,6 +6,7 @@ const sampleObject = new Evented();
 document.getElementById('addEventButton').addEventListener('click', () => {
 	// Add event listener to the sample object
 	sampleObject.on('sampleEvent', (data) => {
+
 		console.log('Event fired', data);
 	});
 });

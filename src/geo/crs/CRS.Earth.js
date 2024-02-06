@@ -1,5 +1,6 @@
 import {CRS} from './CRS.js';
-import * as Util from '../../core/Util.js';
+// import * as Util from '../../core/Util.js';
+import {extend} from '../../core/Util.js';
 
 /*
  * @namespace CRS
@@ -11,7 +12,7 @@ import * as Util from '../../core/Util.js';
  * meters.
  */
 
-export const Earth = Util.extend({}, CRS, {
+export const Earth = extend({}, CRS, {
 	wrapLng: [-180, 180],
 
 	// Mean Earth Radius, as recommended for use by

@@ -3,6 +3,8 @@ import {LonLat} from '../projection/Projection.LonLat.js';
 import {toTransformation} from '../../geometry/Transformation.js';
 import * as Util from '../../core/Util.js';
 
+// 简单情况（譬如游戏的二维地图）下的坐标参考系统
+
 /*
  * @namespace CRS
  * @crs L.CRS.Simple

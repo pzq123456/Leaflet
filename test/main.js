@@ -80,14 +80,26 @@ function renderObject(obj, parent) {
         ul.appendChild(li);
         let span = document.createElement('span');
         // style for key
-        span.style.cssText = 'color: #3da1ac';
+        span.style.cssText = 'color: orange';
         span.textContent = key;
         // add : after key
         span.textContent += ': ';
         li.appendChild(span);
         if (typeof obj[key] === 'object') {
             renderObject(obj[key], li);
-        } else {
+        } else if (
+            typeof obj[key] === 'function' ||
+            typeof obj[key] === 'symbol'
+        ) {
+            let pre = document.createElement('pre');
+            let code = document.createElement('code');
+            code.textContent = obj[key];
+
+            code.className = 'language-js';
+            pre.appendChild(code);
+            li.appendChild(pre);
+        }
+        else{
             let span = document.createElement('span');
             // style for value
             span.style.cssText = 'color: #fff';

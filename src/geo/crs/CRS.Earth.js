@@ -21,6 +21,7 @@ export const Earth = extend({}, CRS, {
 	R: 6371000,
 
 	// distance between two geographical points using spherical law of cosines approximation
+	// haversine 公式
 	distance(latlng1, latlng2) {
 		const rad = Math.PI / 180,
 		    lat1 = latlng1.lat * rad,

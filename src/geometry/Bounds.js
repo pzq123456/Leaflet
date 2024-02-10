@@ -33,9 +33,10 @@ export class Bounds {
             this.extend(points[i]);
         }
     }
+	
 	/*
 	@method extend(point: Point): this
-	Extends the bounds to contain the given poin
+	Extends the bounds to contain the given point
 	@alternative
 	@method extend(otherBounds: Bounds): this
 	Extend the bounds to contain the given bounds*/

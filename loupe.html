@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnifying Glass</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    canvas {
+        border: 1px solid black;
+    }
+</style>
+</head>
+<body>
+
+<canvas id="originalCanvas" width="400" height="300"></canvas>
+<canvas id="magnifiedCanvas" width="300" height="300"></canvas>
+
+<script>
+    const originalCanvas = document.getElementById('originalCanvas');
+    const magnifiedCanvas = document.getElementById('magnifiedCanvas');
+    const originalCtx = originalCanvas.getContext('2d');
+    const magnifiedCtx = magnifiedCanvas.getContext('2d');
+
+    let magnifierSize = 100; // 放大镜尺寸
+    let magnificationFactor = 3; // 放大倍数
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    /**
+     * 节流函数，返回一个函数，该函数在给定的时间内最多执行一次
+     * @param {Function} fn - 需要节流的函数
+     * @param {Number} time - 间隔时间
+     * @param {Object} context - 函数执行的上下文
+     * @returns 
+     */
+    function throttle(fn, time, context) {
+        let lock, queuedArgs;
+
+        function later() {
+            // reset lock and call if queued
+            lock = false;
+            if (queuedArgs) {
+                wrapperFn.apply(context, queuedArgs);
+                queuedArgs = false;
+            }
+        }
+
+        function wrapperFn(...args) {
+            if (lock) {
+                // called too soon, queue to call later
+                queuedArgs = args;
+
+            } else {
+                // call and lock until later
+                fn.apply(context, args); // .apply 就是指定函数执行的上下文和参数
+                setTimeout(later, time);
+                lock = true;
+            }
+        }
+
+        return wrapperFn;
+    }
+
+
+    // 鼠标滚轮缩放 使用节流函数
+    originalCanvas.addEventListener('wheel', throttle(function(event) {
+        if (event.deltaY < 0) {
+            magnificationFactor += 0.1;
+        } else {
+            magnificationFactor -= 0.1;
+        }
+        // drawRect();
+        console.log(magnificationFactor);
+    }, 100, this));
+
+
+    originalCanvas.addEventListener('mousemove', function(event) {
+        mouseX = event.offsetX;
+        mouseY = event.offsetY;
+        throttle(render, 100, this)();
+    });
+
+    function render() {
+        drawTestImage();
+        drawRect();
+        drawMagnifiedImage(magnifiedCtx, originalCanvas, magnificationFactor);
+        requestAnimationFrame(render);
+    }
+
+    function drawRect() {
+        // originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+
+        originalCtx.strokeStyle = 'red';
+        originalCtx.lineWidth = 1;
+        originalCtx.strokeRect(mouseX - magnifierSize / 2, mouseY - magnifierSize / 2, magnifierSize, magnifierSize);
+
+        // 若遇到超出画布的情况，需要进行处理
+        if (mouseX - magnifierSize / 2 < 0) {
+            // originalCtx.strokeRect(originalCanvas.width - magnifierSize, mouseY - magnifierSize / 2, magnifierSize, magnifierSize);
+            // 将超出部分的长度加到另一边
+            originalCtx.strokeRect(originalCanvas.width + mouseX - magnifierSize / 2, mouseY - magnifierSize / 2, magnifierSize, magnifierSize);
+        }
+        if (mouseX + magnifierSize / 2 > originalCanvas.width) {
+            // originalCtx.strokeRect(0, mouseY - magnifierSize / 2, magnifierSize, magnifierSize);   
+            originalCtx.strokeRect(mouseX - magnifierSize / 2 - originalCanvas.width, mouseY - magnifierSize / 2, magnifierSize, magnifierSize);        
+        }
+        if (mouseY - magnifierSize / 2 < 0) {
+            // originalCtx.strokeRect(mouseX - magnifierSize / 2, originalCanvas.height - magnifierSize, magnifierSize, magnifierSize);
+            originalCtx.strokeRect(mouseX - magnifierSize / 2, originalCanvas.height + mouseY - magnifierSize / 2, magnifierSize, magnifierSize);
+        }
+        if (mouseY + magnifierSize / 2 > originalCanvas.height) {
+            // originalCtx.strokeRect(mouseX - magnifierSize / 2, 0, magnifierSize, magnifierSize);
+            originalCtx.strokeRect(mouseX - magnifierSize / 2, mouseY - magnifierSize / 2 - originalCanvas.height, magnifierSize, magnifierSize);
+        }
+
+    }
+
+    function drawMagnifiedImage(ctx,img,factor){
+        ctx.clearRect(0, 0, magnifiedCanvas.width, magnifiedCanvas.height);
+        ctx.drawImage(img, mouseX - magnifierSize / 2, mouseY - magnifierSize / 2, magnifierSize, magnifierSize, 0, 0, magnifiedCanvas.width, magnifiedCanvas.height);
+    }
+
+    function drawTestImage() {
+        originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+        originalCtx.fillStyle = 'black';
+        originalCtx.fillRect(0, 0, originalCanvas.width, originalCanvas.height);
+        originalCtx.fillStyle = 'white';
+        originalCtx.font = '30px Arial';
+        originalCtx.fillText('Hello World', 100, 100);
+    }
+
+ 
+
+</script>
+
+</body>
+</html>

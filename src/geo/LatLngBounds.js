@@ -159,7 +159,7 @@ export class LatLngBounds {
 			obj = toLatLngBounds(obj);
 		}
 
-		const sw = this._southWest
+		const sw = this._southWest,
 		      ne = this._northEast;
 		let sw2, ne2;
 
